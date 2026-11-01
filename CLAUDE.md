@@ -34,4 +34,11 @@ ShopBoard: a shop landing page with a product list and a sign-up form.
 - `index.html`: the page
 - `src/style.css`: all styles
 - `src/products.js`: the product data
-- `src/main.js`: JavaScript entry point
+- `src/product-logic.js`: search, category filtering and price sorting without changing the catalog
+- `src/cart.js`: cart state, totals and Local Storage; returns plain summaries
+- `src/money.js`: shared cents conversion and USD formatting
+- `src/ui.js`: the only file for DOM access, rendering, listeners and focus
+- `src/main.js`: connects the modules through plain values and callbacks
+- `tests/`: Node tests for the product logic, cart and money
+
+For new features, keep page interactions in `src/ui.js` and feature state in its own module. A future wishlist belongs in `src/wishlist.js`, connected by `src/main.js`. See README.md for the module walkthrough.

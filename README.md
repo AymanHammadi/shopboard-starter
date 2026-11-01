@@ -1,8 +1,8 @@
-# ShopBoard: Day 1 project
+# ShopBoard: Interactive shop
 
-This is the complete Day 1 project. It is your starting point for the Day 2 homework.
+ShopBoard renders 12 products with name search, category filtering, price sorting, and a cart that survives a page refresh.
 
-It includes a ShopBoard page built with semantic HTML, a sign-up form with native validation, mobile-first CSS, and the code quality tools: Prettier, ESLint, husky and lint-staged.
+It uses plain JavaScript modules, semantic HTML, and mobile-first CSS. The original sign-up form still uses native validation; account creation is not connected to a backend.
 
 ---
 
@@ -37,8 +37,13 @@ shopboard/
 ├── index.html            ← the whole page (HTML)
 ├── src/
 │   ├── style.css         ← all the styles (CSS)
-│   ├── products.js       ← data for 12 products, used on Day 2
-│   └── main.js           ← where the JavaScript starts (almost empty for now)
+│   ├── products.js       ← the product catalog
+│   ├── product-logic.js  ← search, category filtering, and price sorting
+│   ├── cart.js           ← cart quantities, totals, and Local Storage
+│   ├── money.js          ← cents conversion and USD formatting
+│   ├── ui.js             ← all DOM access, rendering, and event listeners
+│   └── main.js           ← connects the modules and starts the page
+├── tests/                ← product, cart, and money tests using Node's test runner
 ├── CLAUDE.md             ← project rules for the AI
 ├── package.json          ← project name, commands and tools
 ├── package-lock.json     ← exact tool versions (don't edit by hand)
@@ -55,11 +60,14 @@ shopboard/
 The page, split with the right tags:
 
 - `header` holds the logo, the `nav` with the links, and the cart counter.
-- `main` holds 3 sections (`section`):
+- `main` holds 4 sections (`section`):
   - **hero:** the only `h1` on the page.
-  - **products:** 6 cards, each one an `article`.
+  - **products:** controls and a grid filled from the product catalog.
+  - **shopping-cart:** cart rows, quantities, item count, and total.
   - **register:** the sign-up form.
 - `footer` closes the page.
+
+The two `<template>` elements hold reusable card markup, not product data. `ui.js` clones them and fills in the text.
 
 In the form:
 
@@ -84,11 +92,46 @@ At the top of the file there are **variables** (`--ink`, `--accent`, ...). To ch
 
 ### `src/products.js`
 
-An array of 12 products. Each product has an `id`, `name`, `category` and `price`. On Day 2 you'll render the cards from this data instead of writing them by hand in the HTML.
+An array of 12 products. Each product has an `id`, `name`, `category` and `price`. This is the only catalog to edit when adding or changing products.
+
+### `src/product-logic.js`
+
+`getCategories()` returns unique categories. `getVisibleProducts(filters)` applies search, category, and sorting together and returns a new array. Sorting never changes the original catalog, so selecting "Default" restores the original order.
+
+### `src/cart.js`
+
+Owns the cart entries and Local Storage. `loadCart()` restores valid saved entries. `addToCart(id)`, `changeQuantity(id, change)`, `removeFromCart(id)`, and `clearCart()` save each change and return a fresh summary with rows, item count, total cents, and any storage warning.
+
+Cart action IDs come from the product catalog. Quantity buttons pass `1` or `-1`; a quantity reaching zero removes that entry. Call `loadCart()` at startup before handling actions.
+
+The `shopboard-cart` storage key contains only IDs and quantities, for example `[{"id":1,"quantity":2}]`. Names and prices always come from `products.js`. Invalid saved carts start empty with a warning. If storage is unavailable, shopping still works in memory and the page explains that changes cannot survive a refresh.
+
+### `src/money.js`
+
+`toCents(price)` converts dollar prices to integer cents for calculations. `formatPrice(cents)` formats cents as USD for display. Keeping these together avoids separate money rules in the cart and the page.
+
+### `src/ui.js`
+
+The only JavaScript file that touches the DOM. `initializePage(...)` fills categories and registers listeners once. It sends plain values to callbacks, not HTML elements or browser events. `renderProducts(products)` and `renderCart(summary, message)` display results supplied by the other modules. Keyboard focus, clear-cart confirmation, and status messages also live here.
 
 ### `src/main.js`
 
-The first JavaScript file that loads. For now it only imports the CSS. Day 2 starts here.
+The entry point connects the modules through imports and callbacks. It loads the cart, starts the page, sends filter values to the product logic, and sends cart actions to the cart module. It never queries or changes HTML itself.
+
+For example, clicking "Add to cart" follows this path:
+
+1. `ui.js` reads the clicked product ID and calls `onAddToCart(id)`.
+2. `main.js` calls `addToCart(id)` in `cart.js`.
+3. `cart.js` changes the quantity, saves it, and returns the updated summary.
+4. `main.js` passes that summary to `renderCart(...)` in `ui.js`.
+
+### Where would a wishlist go?
+
+Add `src/wishlist.js` for saved product IDs and wishlist actions. Put its buttons, listeners, and rendering in the existing `ui.js`, then connect the callbacks in `main.js`. Wishlist state does not belong in `cart.js`, and the new module should not access the DOM. This is a placement guide, not an implemented feature.
+
+### `tests/`
+
+`product-logic.test.js` checks combined controls and original-order preservation. `cart.test.js` checks quantities, totals, persistence, and invalid or blocked storage. `money.test.js` checks cents conversion and price formatting. Run all tests with `npm test`; no additional test library is needed.
 
 ### `CLAUDE.md`
 
@@ -144,6 +187,7 @@ When you're done, delete these lines.
 ```bash
 npm run dev            # start the project
 npm run lint           # check the JavaScript
+npm test               # run module tests
 npm run format         # format every file
 npm run format:check   # check formatting without changing anything
 npm run build          # build the production version into dist/
