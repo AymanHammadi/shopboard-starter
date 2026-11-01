@@ -45,6 +45,7 @@ shopboard/
 │   └── main.js           ← connects the modules and starts the page
 ├── tests/                ← product, cart, and money tests using Node's test runner
 ├── CLAUDE.md             ← project rules for the AI
+├── debugging-log.md      ← bug observations, investigations, causes, and fixes
 ├── package.json          ← project name, commands and tools
 ├── package-lock.json     ← exact tool versions (don't edit by hand)
 ├── eslint.config.js      ← ESLint rules

@@ -1,0 +1,1 @@
+No bugs during the homework so far. Parts 1 and 2 were implemented with AI assistance. The 15 module tests and the automated browser checks passed; no browser console errors were observed during those checks.
