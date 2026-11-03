@@ -42,3 +42,7 @@ ShopBoard: a shop landing page with a product list and a sign-up form.
 - `tests/`: Node tests for the product logic, cart and money
 
 For new features, keep page interactions in `src/ui.js` and feature state in its own module. A future wishlist belongs in `src/wishlist.js`, connected by `src/main.js`. See README.md for the module walkthrough.
+
+## Resuming work
+
+Before starting or resuming implementation, read `docs/ai/tasks.md` if it exists. It is an ignored local tracker, not a file supplied by a fresh clone. Check the working tree and the current task's progress before choosing the first unfinished stage whose dependencies are complete. Update the tracker with changes, checks, blockers, and the next action. Pause for user review before committing each stage; continue to the next stage only after approval. If the tracker is missing, ask for the current task rather than reconstructing one from old homework.
