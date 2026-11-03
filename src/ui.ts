@@ -4,6 +4,12 @@ import type { Cart, Product } from "./types.ts";
 
 type CartAction = "decrease" | "increase" | "remove";
 
+const EAGER_PRODUCT_IMAGES = 3;
+const PRODUCT_IMAGE_WIDTHS = [320, 640, 960, 1440];
+const PRODUCT_IMAGE_ASPECT_RATIO = 4 / 3;
+const PRODUCT_IMAGE_SIZES =
+  "(min-width: 1280px) 352px, (min-width: 1264px) 556px, (min-width: 768px) calc((100vw - 152px) / 2), calc(100vw - 64px)";
+
 interface PageCallbacks {
   categories: string[];
   onProductsChange: (filters: ProductFilters) => void;
@@ -49,10 +55,32 @@ const cartFeedback = getElement("#cart-feedback", HTMLElement);
 const storageStatus = getElement("#cart-storage-status", HTMLElement);
 const cartTitle = getElement("#cart-title", HTMLElement);
 
+// Request the same photograph at a compressed 4:3 size for each responsive source.
+function productImageUrl(url: string, width: number): string {
+  const imageUrl = new URL(url);
+  imageUrl.search = new URLSearchParams({
+    auto: "compress",
+    cs: "tinysrgb",
+    fit: "crop",
+    w: String(width),
+    h: String(width / PRODUCT_IMAGE_ASPECT_RATIO),
+    q: "80",
+  }).toString();
+  return imageUrl.href;
+}
+
 // Display the already-filtered products without deciding which products match.
 export function renderProducts(visibleProducts: Product[]): void {
-  const cards = visibleProducts.map((product) => {
+  const cards = visibleProducts.map((product, index) => {
     const card = cloneTemplate(productTemplate);
+    const image = getElement(".product-image", HTMLImageElement, card);
+    image.alt = product.image.alt;
+    image.loading = index < EAGER_PRODUCT_IMAGES ? "eager" : "lazy";
+    image.sizes = PRODUCT_IMAGE_SIZES;
+    image.srcset = PRODUCT_IMAGE_WIDTHS.map(
+      (width) => `${productImageUrl(product.image.url, width)} ${width}w`,
+    ).join(", ");
+    image.src = productImageUrl(product.image.url, image.width);
     getElement("h3", HTMLElement, card).textContent = product.name;
     getElement(".category", HTMLElement, card).textContent = product.category;
     getElement(".price", HTMLElement, card).textContent = formatPrice(toCents(product.price));
@@ -146,6 +174,11 @@ export function initializePage({
   searchInput.addEventListener("input", () => onProductsChange(readFilters()));
   categorySelect.addEventListener("change", () => onProductsChange(readFilters()));
   sortSelect.addEventListener("change", () => onProductsChange(readFilters()));
+
+  // Preserve native validation while keeping credentials off the network and out of storage.
+  getElement("#register-form", HTMLFormElement).addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
 
   productGrid.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;

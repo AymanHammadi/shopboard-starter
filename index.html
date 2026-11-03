@@ -4,21 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="ShopBoard: everything your shop needs, in one board." />
+    <meta name="theme-color" content="#e8ebe6" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-900-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="preconnect" href="https://images.pexels.com" />
     <title>ShopBoard</title>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="site-header">
-      <a class="logo" href="/">ShopBoard</a>
-      <nav aria-label="Main">
-        <ul class="nav-list">
-          <li><a href="#products">Shop</a></li>
-          <li><a href="#register">Sign up</a></li>
-        </ul>
-      </nav>
-      <a class="cart" href="#shopping-cart">Cart: <span id="cart-count">0</span></a>
+      <div class="container header-inner">
+        <a class="logo" href="/">ShopBoard</a>
+        <nav aria-label="Main">
+          <ul class="nav-list">
+            <li><a href="#products">Shop</a></li>
+            <li><a href="#register">Sign up</a></li>
+          </ul>
+        </nav>
+        <a class="cart" href="#shopping-cart">Cart <span id="cart-count">0</span></a>
+      </div>
     </header>
 
-    <main>
+    <main id="main-content" class="container" tabindex="-1">
       <section class="hero" aria-labelledby="hero-title">
         <h1 id="hero-title">Sell smarter.</h1>
         <p>Everything your shop needs, in one board.</p>
@@ -53,7 +73,7 @@
               <option value="descending">High to low</option>
             </select>
           </div>
-          <button type="submit">Search</button>
+          <button class="button-secondary" type="submit">Search</button>
         </form>
         <p id="product-results" role="status"></p>
         <div id="product-grid" class="grid"></div>
@@ -61,20 +81,22 @@
 
       <section id="shopping-cart" aria-labelledby="cart-title">
         <h2 id="cart-title" tabindex="-1">Your cart</h2>
-        <p id="cart-empty">Your cart is empty. Add a product to get started.</p>
+        <p id="cart-empty">Your cart is empty. <a href="#products">Find your first product</a>.</p>
         <ul id="cart-items" class="cart-items"></ul>
         <p class="cart-summary">
           Items: <span id="cart-item-count">0</span> · Total:
           <strong id="cart-total">$0.00</strong>
         </p>
-        <button id="clear-cart" class="button-secondary" type="button" disabled>Clear cart</button>
+        <button id="clear-cart" class="button-secondary button-destructive" type="button" disabled>
+          Clear cart
+        </button>
         <p id="cart-feedback" role="status"></p>
         <p id="cart-storage-status" role="status"></p>
       </section>
 
       <section id="register" class="register" aria-labelledby="register-title">
         <h2 id="register-title">Create your account</h2>
-        <form class="form">
+        <form id="register-form" class="form" method="dialog">
           <div class="field">
             <label for="name">Full name</label>
             <input id="name" name="name" type="text" autocomplete="name" required />
@@ -96,21 +118,22 @@
             />
             <p id="password-hint" class="hint">At least 8 characters.</p>
           </div>
-          <div class="field field-check">
+          <label class="field-check" for="terms">
             <input id="terms" name="terms" type="checkbox" required />
-            <label for="terms">I agree to the terms</label>
-          </div>
+            <span>I agree to the terms</span>
+          </label>
           <button type="submit">Create account</button>
         </form>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>© 2026 ShopBoard</p>
+      <div class="container"><p>© 2026 ShopBoard</p></div>
     </footer>
 
     <template id="product-template">
       <article class="card">
+        <img class="product-image" width="640" height="480" decoding="async" alt="" />
         <h3></h3>
         <p class="category"></p>
         <p class="price"></p>
@@ -128,7 +151,9 @@
           <button class="button-secondary" type="button" data-action="decrease">−</button>
           <span class="cart-quantity"></span>
           <button class="button-secondary" type="button" data-action="increase">+</button>
-          <button class="button-secondary" type="button" data-action="remove">Remove</button>
+          <button class="button-secondary button-destructive" type="button" data-action="remove">
+            Remove
+          </button>
         </div>
         <p class="price cart-line-total"></p>
       </li>

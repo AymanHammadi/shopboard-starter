@@ -83,3 +83,26 @@ Keep native `required`, email, password-length, and terms validation. Do not sho
 ## Redesign acceptance
 
 During implementation, inspect 360px, 768px, and 1280px layouts, keyboard focus, every button state, empty results/cart, blocked storage, image loading/failure, and native form validation/submission. Check text contrast at 4.5:1, large text at 3:1, and control boundaries/focus at 3:1 against adjacent surfaces. These are acceptance targets, not claims of completed accessibility testing. Preserve combined search/filter/sort, default order, cart totals, and persistence. Report checks that could not be performed.
+
+## Asset sources
+
+Inter's Latin WOFF2 files in `public/fonts/` come from [Fontsource Inter 5.2.8](https://www.jsdelivr.com/package/npm/@fontsource/inter?version=5.2.8), weights 400, 600, and 900. The Inter Project Authors license the font under SIL OFL 1.1; the full notice is retained in `public/fonts/OFL.txt` and included in the production build.
+
+The catalog uses fixed Pexels image URLs, not the Pexels API. Each source page below lists the image as free under the [Pexels License](https://www.pexels.com/license/), checked on November 3, 2026. The license permits website and commercial use and modifications; attribution is optional. It prohibits selling unaltered images, redistribution on stock platforms, using images as a trademark, offensive depictions of identifiable people, and implying endorsement. [Pexels' commercial-use guidance](https://help.pexels.com/hc/en-us/articles/360042295214-Can-I-use-the-photos-and-videos-for-a-commercial-project) also warns that depicted brands and other third-party rights may require separate permission.
+
+| Product            | Photographer               | Source                                                                                                    |
+| ------------------ | -------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Leather Tote Bag   | Valentin Ivantsov          | [Tan tote](https://www.pexels.com/photo/elegant-tan-leather-tote-bag-with-straps-36364964/)               |
+| Canvas Backpack    | Ivan S                     | [Canvas backpack](https://www.pexels.com/photo/close-up-shot-of-a-person-carrying-a-backpack-9630186/)    |
+| Mini Crossbody Bag | José Martin Segura Benites | [Brown crossbody](https://www.pexels.com/photo/a-brown-leather-cross-body-bag-with-a-strap-27204288/)     |
+| White Sneakers     | Pranay Patel               | [Light mesh sneaker](https://www.pexels.com/photo/product-shot-of-a-sports-shoe-23491456/)                |
+| Running Shoes      | Andrey Matveev             | [Running shoe](https://www.pexels.com/photo/the-women-s-running-shoe-is-made-of-grey-and-white-28381500/) |
+| Suede Loafers      | Anzor Dukaev               | [Suede tassel loafers](https://www.pexels.com/photo/elegant-brown-suede-loafers-with-tassels-32776950/)   |
+| Wool Scarf         | Vlada Karpovich            | [Knitted scarf](https://www.pexels.com/photo/wool-scarf-on-a-bust-5603011/)                               |
+| Silver Watch       | Pixabay                    | [Silver watch](https://www.pexels.com/photo/silver-colored-analog-watch-278299/)                          |
+| Sunglasses         | Saliem Moeslan             | [Pink aviators](https://www.pexels.com/photo/sunglasses-on-a-white-background-27111647/)                  |
+| Travel Duffel Bag  | Erik Mclean                | [Dark duffel](https://www.pexels.com/photo/a-black-bag-on-an-armchair-9582665/)                           |
+| Rain Boots         | Дарья Пенина               | [Purple rain boots](https://www.pexels.com/photo/a-pair-of-rain-boots-14833098/)                          |
+| Leather Belt       | BELTLEY COM                | [Black belt](https://www.pexels.com/photo/elegant-black-leather-belt-on-reflective-surface-38053174/)     |
+
+The photos illustrate the starter catalog, not verified supplier inventory. They are not offered for sale as images, used as branding, or presented as endorsements. Before turning this starter into a real store, replace them with photographs of the actual goods and confirm any necessary third-party permissions. External image availability remains the provider's responsibility; a failed image must leave its alt text, product details, and cart action usable.

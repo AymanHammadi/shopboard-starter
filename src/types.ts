@@ -4,6 +4,10 @@ export interface Product {
   name: string;
   category: string;
   price: number;
+  image: {
+    url: string;
+    alt: string;
+  };
 }
 
 export interface CartItem {
