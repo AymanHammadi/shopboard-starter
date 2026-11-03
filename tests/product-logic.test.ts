@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { products } from "../src/products.js";
-import { getCategories, getVisibleProducts } from "../src/product-logic.js";
+import { products } from "../src/products.ts";
+import { getCategories, getVisibleProducts } from "../src/product-logic.ts";
+import type { ProductFilters } from "../src/product-logic.ts";
 
-test("categories come from the catalog without duplicates", () => {
+await test("categories come from the catalog without duplicates", () => {
   assert.deepEqual(getCategories(), ["Bags", "Shoes", "Accessories"]);
 });
 
-test("search ignores case and surrounding whitespace", () => {
+await test("search ignores case and surrounding whitespace", () => {
   const matches = getVisibleProducts({ search: "  LEATHER  ", category: "", sort: "default" });
   assert.deepEqual(
     matches.map((product) => product.id),
@@ -15,8 +16,8 @@ test("search ignores case and surrounding whitespace", () => {
   );
 });
 
-test("search, category, and both price sorts work together", () => {
-  const filters = { search: "bag", category: "Bags", sort: "ascending" };
+await test("search, category, and both price sorts work together", () => {
+  const filters: ProductFilters = { search: "bag", category: "Bags", sort: "ascending" };
   assert.deepEqual(
     getVisibleProducts(filters).map((product) => product.id),
     [3, 1, 10],
@@ -28,7 +29,7 @@ test("search, category, and both price sorts work together", () => {
   assert.deepEqual(getVisibleProducts({ ...filters, category: "Shoes" }), []);
 });
 
-test("Default restores the original order after sorting without changing product data", () => {
+await test("Default restores the original order after sorting without changing product data", () => {
   const original = structuredClone(products);
   getVisibleProducts({ search: "", category: "", sort: "ascending" });
   getVisibleProducts({ search: "", category: "", sort: "descending" });

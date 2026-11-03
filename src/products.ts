@@ -1,4 +1,7 @@
-export const products = [
+import type { Product } from "./types.ts";
+
+// The twelve-product catalog shared by filtering and cart calculations.
+export const products: Product[] = [
   { id: 1, name: "Leather Tote Bag", category: "Bags", price: 89 },
   { id: 2, name: "Canvas Backpack", category: "Bags", price: 49 },
   { id: 3, name: "Mini Crossbody Bag", category: "Bags", price: 39 },
@@ -12,3 +15,10 @@ export const products = [
   { id: 11, name: "Rain Boots", category: "Shoes", price: 60 },
   { id: 12, name: "Leather Belt", category: "Accessories", price: 30 },
 ];
+
+// Resolve a catalog ID or report an invalid caller instead of returning a missing product.
+export function getProduct(id: Product["id"]): Product {
+  const product = products.find((product) => product.id === id);
+  if (!product) throw new Error(`Unknown product ID: ${id}`);
+  return product;
+}
