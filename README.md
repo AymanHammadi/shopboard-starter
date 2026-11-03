@@ -1,221 +1,89 @@
-# ShopBoard: Interactive shop
+# ShopBoard
 
-ShopBoard renders 12 products with name search, category filtering, price sorting, and a cart that survives a page refresh.
+A one-page shop with 12 products, combined name search/category filtering/price sorting, and a cart saved in Local Storage. Built with Vite, strict TypeScript, semantic HTML, and mobile-first CSS. No framework, backend, checkout, or authentication.
 
-It uses plain JavaScript modules, semantic HTML, and mobile-first CSS. The original sign-up form still uses native validation; account creation is not connected to a backend.
+The sign-up form uses native required, email, password-length, and terms validation. It does not create accounts, transmit credentials, or save them. `method="dialog"` also prevents network submission when JavaScript is unavailable.
 
----
+## Run locally
 
-## 1. Run the project
-
-You need Node.js (LTS) and Git. Check in your terminal:
+Use Node.js 24 or newer and Git. From a clone of this repository:
 
 ```bash
-node -v
-git --version
-```
-
-Then:
-
-```bash
-git clone <repo-url>
-cd shopboard
-npm install
+npm ci
 npm run dev
 ```
 
-Open the URL it prints (usually `http://localhost:5173`).
+Open the URL Vite prints. Installation also sets up the husky commit hook.
 
-Note: `npm install` downloads all the tools and sets up husky. The project must be inside a git repo. If you cloned it, it already is.
+## Project map
 
----
-
-## 2. What each file does
-
-```
-shopboard/
-├── index.html            ← the whole page (HTML)
-├── src/
-│   ├── style.css         ← all the styles (CSS)
-│   ├── products.js       ← the product catalog
-│   ├── product-logic.js  ← search, category filtering, and price sorting
-│   ├── cart.js           ← cart quantities, totals, and Local Storage
-│   ├── money.js          ← cents conversion and USD formatting
-│   ├── ui.js             ← all DOM access, rendering, and event listeners
-│   └── main.js           ← connects the modules and starts the page
-├── tests/                ← product, cart, and money tests using Node's test runner
-├── CLAUDE.md             ← project rules for the AI
-├── debugging-log.md      ← bug observations, investigations, causes, and fixes
-├── package.json          ← project name, commands and tools
-├── package-lock.json     ← exact tool versions (don't edit by hand)
-├── eslint.config.js      ← ESLint rules
-├── .prettierrc           ← Prettier settings
-├── .prettierignore       ← files Prettier skips
-├── .husky/pre-commit     ← the command that runs before every commit
-├── .vscode/              ← suggested VS Code settings
-└── .gitignore            ← files that never go to GitHub
+```text
+index.html                # page, native forms, and reusable card templates
+src/
+├── types.ts              # Product, saved CartItem, CartLine, and Cart summary types
+├── products.ts           # 12-product catalog, photo URLs, alt text, and ID lookup
+├── product-logic.ts      # combined search/filter/sort without changing catalog order
+├── cart.ts               # cart quantities, totals, persistence, and storage warnings
+├── money.ts              # integer-cent conversion and USD formatting
+├── ui.ts                 # all DOM access, rendering, listeners, and keyboard focus
+└── main.ts               # startup and module wiring through values and callbacks
+styles/style.css          # design tokens, fonts, controls, and responsive layouts
+public/                   # favicon and self-hosted Inter fonts with their license
+tests/                    # TypeScript cart, product-logic, and money tests
+tsconfig.json             # strict TypeScript checks for source and tests
+eslint.config.js          # lint rules, including type safety and DOM boundaries
+CLAUDE.md                 # coding rules and local task-resume procedure
+DESIGN.md                 # visual guidelines, asset credits, and usage restrictions
 ```
 
-### `index.html`
+### How the modules work together
 
-The page, split with the right tags:
-
-- `header` holds the logo, the `nav` with the links, and the cart counter.
-- `main` holds 4 sections (`section`):
-  - **hero:** the only `h1` on the page.
-  - **products:** controls and a grid filled from the product catalog.
-  - **shopping-cart:** cart rows, quantities, item count, and total.
-  - **register:** the sign-up form.
-- `footer` closes the page.
-
-The two `<template>` elements hold reusable card markup, not product data. `ui.js` clones them and fills in the text.
-
-In the form:
-
-- Every `input` has a `label`, linked with `for` and `id`.
-- `type="email"` checks the email format for you.
-- `required` blocks sending an empty field.
-- `minlength="8"` forces at least 8 characters for the password.
-
-The browser does all this validation, **with zero lines of JavaScript**.
-
-### `src/style.css`
-
-Written **mobile-first**:
-
-- The base styles are for phones (360px): cards in one column.
-- `@media (min-width: 768px)` for tablets: two columns.
-- `@media (min-width: 1280px)` for desktops: three columns.
-
-At the top of the file there are **variables** (`--ink`, `--accent`, ...). To change a color, change it in one place.
-
-`:focus-visible` draws a clear outline on any element you reach with Tab. This matters for people who use only a keyboard.
-
-### `src/products.js`
-
-An array of 12 products. Each product has an `id`, `name`, `category` and `price`. This is the only catalog to edit when adding or changing products.
-
-### `src/product-logic.js`
-
-`getCategories()` returns unique categories. `getVisibleProducts(filters)` applies search, category, and sorting together and returns a new array. Sorting never changes the original catalog, so selecting "Default" restores the original order.
-
-### `src/cart.js`
-
-Owns the cart entries and Local Storage. `loadCart()` restores valid saved entries. `addToCart(id)`, `changeQuantity(id, change)`, `removeFromCart(id)`, and `clearCart()` save each change and return a fresh summary with rows, item count, total cents, and any storage warning.
-
-Cart action IDs come from the product catalog. Quantity buttons pass `1` or `-1`; a quantity reaching zero removes that entry. Call `loadCart()` at startup before handling actions.
-
-The `shopboard-cart` storage key contains only IDs and quantities, for example `[{"id":1,"quantity":2}]`. Names and prices always come from `products.js`. Invalid saved carts start empty with a warning. If storage is unavailable, shopping still works in memory and the page explains that changes cannot survive a refresh.
-
-### `src/money.js`
-
-`toCents(price)` converts dollar prices to integer cents for calculations. `formatPrice(cents)` formats cents as USD for display. Keeping these together avoids separate money rules in the cart and the page.
-
-### `src/ui.js`
-
-The only JavaScript file that touches the DOM. `initializePage(...)` fills categories and registers listeners once. It sends plain values to callbacks, not HTML elements or browser events. `renderProducts(products)` and `renderCart(summary, message)` display results supplied by the other modules. Keyboard focus, clear-cart confirmation, and status messages also live here.
-
-### `src/main.js`
-
-The entry point connects the modules through imports and callbacks. It loads the cart, starts the page, sends filter values to the product logic, and sends cart actions to the cart module. It never queries or changes HTML itself.
-
-For example, clicking "Add to cart" follows this path:
-
-1. `ui.js` reads the clicked product ID and calls `onAddToCart(id)`.
-2. `main.js` calls `addToCart(id)` in `cart.js`.
-3. `cart.js` changes the quantity, saves it, and returns the updated summary.
-4. `main.js` passes that summary to `renderCart(...)` in `ui.js`.
-
-### Where would a wishlist go?
-
-Add `src/wishlist.js` for saved product IDs and wishlist actions. Put its buttons, listeners, and rendering in the existing `ui.js`, then connect the callbacks in `main.js`. Wishlist state does not belong in `cart.js`, and the new module should not access the DOM. This is a placement guide, not an implemented feature.
-
-### `tests/`
-
-`product-logic.test.js` checks combined controls and original-order preservation. `cart.test.js` checks quantities, totals, persistence, and invalid or blocked storage. `money.test.js` checks cents conversion and price formatting. Run all tests with `npm test`; no additional test library is needed.
-
-### `CLAUDE.md`
-
-The rules we want the AI to follow. AI coding tools read this file before writing code in the project. If you see the AI making the same mistake again and again, **add a rule**.
-
----
-
-## 3. Code quality tools
-
-| Tool            | What it does                                                              |
-| --------------- | ------------------------------------------------------------------------- |
-| **Prettier**    | Formats the code: spacing, commas, line length.                           |
-| **ESLint**      | Finds mistakes, like an undefined variable or `==` instead of `===`.      |
-| **husky**       | Runs commands automatically before every `git commit`.                    |
-| **lint-staged** | Runs those commands only on the files you changed, not the whole project. |
-
-**What happens when you commit:**
-
+```text
+Add to cart
+  ui.ts reads the product ID
+  main.ts calls cart.ts
+  cart.ts updates quantities, saves, and returns a Cart summary
+  main.ts passes the summary to ui.ts for rendering
 ```
+
+`ui.ts` registers listeners once and passes plain values to callbacks. Filters work together; selecting Default restores catalog order. Money calculations use integer cents.
+
+The `shopboard-cart` storage key holds only IDs and quantities, for example `[{"id":1,"quantity":2}]`. Names and prices come from the catalog. Invalid saved data starts an empty cart with a warning. If storage is blocked, shopping still works in memory but cannot survive a refresh.
+
+A future wishlist belongs in `src/wishlist.ts`. Keep its state there, its page interactions in `ui.ts`, and its wiring in `main.ts`.
+
+## Commands and checks
+
+| Command                | Purpose                                         |
+| ---------------------- | ----------------------------------------------- |
+| `npm run dev`          | Start Vite                                      |
+| `npm run typecheck`    | Check source and test types without emitting JS |
+| `npm test`             | Run the 17 Node tests                           |
+| `npm run lint`         | Run ESLint                                      |
+| `npm run format:check` | Check formatting                                |
+| `npm run format`       | Format files                                    |
+| `npm run build`        | Typecheck and build into `dist/`                |
+| `npm run preview`      | Serve the production build locally              |
+
+Tests cover combined filters, default order, cart actions/totals/persistence, invalid or blocked storage, and money formatting. Node runs the TypeScript tests directly; `typecheck` checks their types.
+
+```text
 git commit
-  → husky runs .husky/pre-commit
-    → lint-staged
-      → ESLint fixes what it can, and blocks the commit if an error can't be fixed
-      → Prettier formats the files
-  → if everything passes, the commit goes through
+  husky → lint-staged
+    JS/TS → ESLint --fix → Prettier
+    HTML/CSS/Markdown/JSON → Prettier
 ```
 
-### Try it yourself (important)
+The hook does not run typechecking, tests, or the build. Run those separately before review. `.vscode/` recommends ESLint and Prettier and configures format-on-save.
 
-**1. Prettier fixes formatting for you.** Write some ugly code in `src/main.js`:
+## Design and assets
 
-```js
-const x = 1;
-console.log(x);
-```
+The interface uses lime actions, sage surfaces, rounded white cards, and self-hosted Inter. The product grid has one column below 768px, two from 768px, and three from 1280px. See [DESIGN.md](DESIGN.md) for tokens, interaction rules, photo credits, and license details.
 
-Run `git add` and `git commit`, then open the file again. It's formatted now.
+Product photos load from fixed Pexels URLs with compressed responsive sizes. Pexels attribution is optional; third-party rights and endorsement restrictions still apply. These are stock illustrations of the catalog, not verified supplier inventory. A real store needs photos of the actual goods and any required permissions. Retain `public/fonts/OFL.txt` when distributing Inter.
 
-**2. ESLint blocks the commit.** Write:
+## Verification limits
 
-```js
-if (count == 1) {
-  console.log("one");
-}
-```
+Development and production checks passed in headless Chrome, including cart persistence, combined filters, keyboard actions, form submission safety, image/storage failures, and 360/768/1280px layouts. This is not a full accessibility audit.
 
-Try to commit. You'll get an error and the commit stops: `count` is not defined, and you must use `===` instead of `==`. Fix both and try again.
-
-When you're done, delete these lines.
-
-### Useful commands
-
-```bash
-npm run dev            # start the project
-npm run lint           # check the JavaScript
-npm test               # run module tests
-npm run format         # format every file
-npm run format:check   # check formatting without changing anything
-npm run build          # build the production version into dist/
-```
-
-### VS Code
-
-When you open the project, VS Code will suggest two extensions: **Prettier** and **ESLint**. Install both.
-After that, every file formats itself when you save, and ESLint errors show a red underline.
-
----
-
-## 4. Checks before you say "done"
-
-- [ ] There is only one `h1` on the page.
-- [ ] Every `input` has a `label`.
-- [ ] Sending the empty form shows browser messages.
-- [ ] The whole page works with Tab and Enter, no mouse, and the focus outline is visible.
-- [ ] No horizontal scroll at 360px (DevTools → Toggle device toolbar).
-- [ ] Cards: 1 column at 360, 2 at 768, 3 at 1280.
-- [ ] Lighthouse → Accessibility is above 90.
-- [ ] `npm run lint` passes with no errors.
-
----
-
-## 5. The golden rule
-
-> AI makes it look done. You make it work.
-
-We don't accept code we don't understand. If the AI writes something you don't get, ask it to explain in simple words.
+Firefox, Safari, real phones, and screen readers remain untested. External photo availability and product authenticity are not guaranteed. The last dependency audit reported 11 moderate development-tooling findings related to minimatch advisory `GHSA-g3hv-75wg-m249`; no dependency fixes are included in this upgrade.

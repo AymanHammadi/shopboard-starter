@@ -1,12 +1,12 @@
 # ShopBoard design guidelines
 
-This file defines the target for the interface redesign, not the current appearance. Implement it in `styles/style.css` and `index.html`, with DOM behavior in `src/ui.ts` and product photography data in `src/products.ts` and `src/types.ts`.
+This file defines the implemented interface. Styles live in `styles/style.css` and markup in `index.html`, with DOM behavior in `src/ui.ts` and product photography data in `src/products.ts` and `src/types.ts`.
 
 Adapted from the external `DESIGN-wise.md` reference: lime actions, sage surfaces, heavy Inter headlines, and rounded white cards. Keep ShopBoard's identity and shopping flow; do not copy the reference kit, proprietary Wise Sans, or fintech examples. This is a light-only design.
 
 ## Color tokens
 
-Define these target custom properties in `styles/style.css` under `:root`. Reuse the existing names where listed. Components use tokens, never raw color values. The darker secondary text and control border replace the reference's low-contrast muted gray.
+These custom properties live in `styles/style.css` under `:root`. Components use tokens, never raw color values. The darker secondary text and control border replace the reference's low-contrast muted gray.
 
 | Token              | Value     | Use                                       |
 | ------------------ | --------- | ----------------------------------------- |
